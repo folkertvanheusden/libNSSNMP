@@ -87,8 +87,8 @@ snmp_elem * snmp_data_type_static::get_data()
 }
 
 snmp_data_type_stats::snmp_data_type_stats(const snmp_integer::snmp_integer_type type, uint64_t *const counter) :
-	type(type),
-	counter(counter)
+	counter(counter),
+	type(type)
 {
 }
 
@@ -102,8 +102,8 @@ snmp_elem * snmp_data_type_stats::get_data()
 }
 
 snmp_data_type_stats_atomic::snmp_data_type_stats_atomic(const snmp_integer::snmp_integer_type type, std::atomic_uint64_t *const counter) :
-	type(type),
-	counter(counter)
+	counter(counter),
+	type(type)
 {
 }
 
@@ -336,7 +336,7 @@ std::string snmp_data::find_next_oid(const std::string & oid)
 
 		branch.pop_back();
 
-		if (index + 1 < element->get_children()->size()) {
+		if (index + 1 < ssize_t(element->get_children()->size())) {
 			ssize_t nr = index + 1;
 
 			do {
