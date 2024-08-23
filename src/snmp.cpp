@@ -355,7 +355,7 @@ void snmp::thread()
 			oid_req_t or_;
 
 			if (!process_BER(buffer, rc, &or_, false, 2))
-				return;
+				continue;
 
 			uint8_t *packet_out  = nullptr;
 			size_t   output_size = 0;
