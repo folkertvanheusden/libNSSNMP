@@ -27,6 +27,8 @@ snmp_data_type::snmp_data_type()
 
 snmp_data_type::~snmp_data_type()
 {
+	for(auto & entry: data)
+		delete entry;
 }
 
 std::vector<snmp_data_type *> * snmp_data_type::get_children()
@@ -148,6 +150,9 @@ snmp_data::snmp_data()
 snmp_data::~snmp_data()
 {
 	// delete tree 'data'
+
+	for(auto & entry: data)
+		delete entry;
 }
 
 void snmp_data::register_oid(const std::string & oid, snmp_data_type *const e)

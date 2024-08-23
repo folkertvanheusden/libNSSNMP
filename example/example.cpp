@@ -40,5 +40,8 @@ int main(int argc, char *argv[])
 	while(!stop)
 		sleep(1);
 
+	delete s;
+	delete sd;
+
 	return 0;
 }
