@@ -33,11 +33,19 @@ int main(int argc, char *argv[])
 
 		sd->register_oid("1.3.6.1.2.3.4", snmp_integer::si_integer, 123);  // 123 is a static integer value
 
+		// NOTE: you probably want to use the atomic types as clients are serverd from an other thread
+
 		uint64_t a_value_that_changes = 456;
 		sd->register_oid("1.3.6.1.2.3.5.0", new snmp_data_type_stats(snmp_integer::si_integer, &a_value_that_changes));
 
-		int some_int = 4;
-		sd->register_oid("1.3.6.1.2.3.6.0", new snmp_data_type_stats_int(&some_int));
+		std::atomic_uint64_t a_thread_safe_value_that_changes = 456;
+		sd->register_oid("1.3.6.1.2.3.51.0", new snmp_data_type_stats_atomic(snmp_integer::si_integer, &a_thread_safe_value_that_changes));
+
+		std::atomic_int thread_safe_int = 9;
+		sd->register_oid("1.3.6.1.2.3.6.0", new snmp_data_type_stats_atomic_int(&thread_safe_int));
+
+		std::atomic_uint32_t an_thread_safe_uint32 = 190;
+		sd->register_oid("1.3.6.1.2.3.9.0", new snmp_data_type_stats_atomic_uint32_t(&an_thread_safe_uint32));
 
 		uint32_t an_uint32 = 19;
 		sd->register_oid("1.3.6.1.2.3.8.0", new snmp_data_type_stats_uint32_t(&an_uint32));

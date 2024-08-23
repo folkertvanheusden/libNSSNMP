@@ -101,6 +101,34 @@ snmp_elem * snmp_data_type_stats::get_data()
 	return new snmp_integer(type, *counter);
 }
 
+snmp_data_type_stats_atomic::snmp_data_type_stats_atomic(const snmp_integer::snmp_integer_type type, std::atomic_uint64_t *const counter) :
+	type(type),
+	counter(counter)
+{
+}
+
+snmp_data_type_stats_atomic::~snmp_data_type_stats_atomic()
+{
+}
+
+snmp_elem * snmp_data_type_stats_atomic::get_data()
+{
+	return new snmp_integer(type, *counter);
+}
+
+snmp_data_type_stats_atomic_int::snmp_data_type_stats_atomic_int(std::atomic_int *const counter) : counter(counter)
+{
+}
+
+snmp_data_type_stats_atomic_int::~snmp_data_type_stats_atomic_int()
+{
+}
+
+snmp_elem * snmp_data_type_stats_atomic_int::get_data()
+{
+	return new snmp_integer(snmp_integer::snmp_integer_type::si_integer, *counter);
+}
+
 snmp_data_type_stats_int::snmp_data_type_stats_int(int *const counter) : counter(counter)
 {
 }
@@ -110,6 +138,19 @@ snmp_data_type_stats_int::~snmp_data_type_stats_int()
 }
 
 snmp_elem * snmp_data_type_stats_int::get_data()
+{
+	return new snmp_integer(snmp_integer::snmp_integer_type::si_integer, *counter);
+}
+
+snmp_data_type_stats_atomic_uint32_t::snmp_data_type_stats_atomic_uint32_t(std::atomic_uint32_t *const counter) : counter(counter)
+{
+}
+
+snmp_data_type_stats_atomic_uint32_t::~snmp_data_type_stats_atomic_uint32_t()
+{
+}
+
+snmp_elem * snmp_data_type_stats_atomic_uint32_t::get_data()
 {
 	return new snmp_integer(snmp_integer::snmp_integer_type::si_integer, *counter);
 }

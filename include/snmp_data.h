@@ -1,5 +1,7 @@
 // (C) 2022-2024 by folkert van heusden <mail@vanheusden.com>, released under Apache License v2.0
 #pragma once
+
+#include <atomic>
 #include <mutex>
 #include <optional>
 #include <stdint.h>
@@ -59,6 +61,21 @@ public:
 	snmp_elem * get_data() override;
 };
 
+class snmp_data_type_stats_atomic : public snmp_data_type
+{
+private:
+	std::atomic_uint64_t *const counter;
+
+protected:
+	const snmp_integer::snmp_integer_type type;
+
+public:
+	snmp_data_type_stats_atomic(const snmp_integer::snmp_integer_type type, std::atomic_uint64_t *const counter);
+	virtual ~snmp_data_type_stats_atomic();
+
+	snmp_elem * get_data() override;
+};
+
 class snmp_data_type_stats_int: public snmp_data_type
 {
 private:
@@ -71,6 +88,18 @@ public:
 	snmp_elem * get_data() override;
 };
 
+class snmp_data_type_stats_atomic_int: public snmp_data_type
+{
+private:
+	std::atomic_int *const counter;
+
+public:
+	snmp_data_type_stats_atomic_int(std::atomic_int *const counter);
+	virtual ~snmp_data_type_stats_atomic_int();
+
+	snmp_elem * get_data() override;
+};
+
 class snmp_data_type_stats_uint32_t: public snmp_data_type
 {
 private:
@@ -79,6 +108,18 @@ private:
 public:
 	snmp_data_type_stats_uint32_t(uint32_t *const counter);
 	virtual ~snmp_data_type_stats_uint32_t();
+
+	snmp_elem * get_data() override;
+};
+
+class snmp_data_type_stats_atomic_uint32_t: public snmp_data_type
+{
+private:
+	std::atomic_uint32_t *const counter;
+
+public:
+	snmp_data_type_stats_atomic_uint32_t(std::atomic_uint32_t *const counter);
+	virtual ~snmp_data_type_stats_atomic_uint32_t();
 
 	snmp_elem * get_data() override;
 };
