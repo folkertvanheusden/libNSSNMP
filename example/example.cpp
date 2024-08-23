@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
 
 	try {
 		sd = new snmp_data();
-		sd->register_oid("1.3.6.1.2.1.1.1.0",            "libnssnmp"  );
+		sd->register_oid("1.3.6.1.2.1.1.1.0",            "libnssnmp");
 		sd->register_oid("1.3.6.1.2.1.1.3.0",            new snmp_data_type_running_since());
 		sd->register_oid("1.3.6.1.2.1.1.4.0",            "Folkert van Heusden <mail@vanheusden.com>");
 		sd->register_oid("1.3.6.1.2.1.1.5.0",            "libnssnmp");
@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
 		sd->register_oid("1.3.6.1.2.1.1.8.0",            snmp_integer::si_integer, 0);
 		sd->register_oid("1.3.6.1.4.1.2021.100.3",       __DATE__);
 
-		s = new snmp(sd, &stop);
+		s = new snmp(sd, &stop, true);
 	}
 	catch(const char *error) {
 		fprintf(stderr, "Error: %s\n", error);

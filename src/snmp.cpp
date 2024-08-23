@@ -12,7 +12,7 @@
 #include "snmp_elem.h"
 
 
-snmp::snmp(snmp_data *const sd, std::atomic_bool *const stop): sd(sd), stop(stop)
+snmp::snmp(snmp_data *const sd, std::atomic_bool *const stop, const bool verbose): sd(sd), stop(stop), verbose(verbose)
 {
 	fd = socket(AF_INET, SOCK_DGRAM, 0);
 
@@ -42,7 +42,7 @@ uint64_t snmp::get_INTEGER(const uint8_t *p, const size_t length)
 {
 	uint64_t v = 0;
 
-	if (length > 8)
+	if (length > 8 && verbose)
 		printf("SNMP: INTEGER truncated (%zu bytes)\n", length);
 
 	for(size_t i=0; i<length; i++) {
@@ -56,7 +56,8 @@ uint64_t snmp::get_INTEGER(const uint8_t *p, const size_t length)
 bool snmp::get_type_length(const uint8_t *p, const size_t len, uint8_t *const type, uint8_t *const length)
 {
 	if (len < 2) {
-		printf("snmp::get_type_length: length < 2\n");
+		if (verbose)
+			printf("snmp::get_type_length: length < 2\n");
 		return false;
 	}
 
@@ -92,7 +93,8 @@ bool snmp::get_OID(const uint8_t *p, const size_t length, std::string *const oid
 	}
 
 	if (v) {
-		printf("SNMP: object identifier did not properly terminate\n");
+		if (verbose)
+			printf("SNMP: object identifier did not properly terminate\n");
 		return false;
 	}
 
@@ -108,7 +110,8 @@ bool snmp::process_PDU(const uint8_t *p, const size_t len, oid_req_t *const oids
 		return false;
 
 	if (pdu_type != 0x02) { // expecting an integer here)
-		printf("SNMP::process_PDU: ID-type is not integer\n");
+		if (verbose)
+			printf("SNMP::process_PDU: ID-type is not integer\n");
 		return false;
 	}
 
@@ -122,7 +125,8 @@ bool snmp::process_PDU(const uint8_t *p, const size_t len, oid_req_t *const oids
 		return false;
 
 	if (pdu_type != 0x02) { // expecting an integer here)
-		printf("SNMP::process_PDU: error-type is not integer\n");
+		if (verbose)
+			printf("SNMP::process_PDU: error-type is not integer\n");
 		return false;
 	}
 
@@ -137,7 +141,8 @@ bool snmp::process_PDU(const uint8_t *p, const size_t len, oid_req_t *const oids
 		return false;
 
 	if (pdu_type != 0x02) { // expecting an integer here)
-		printf("SNMP::process_PDU: error-index is not integer\n");
+		if (verbose)
+			printf("SNMP::process_PDU: error-index is not integer\n");
 		return false;
 	}
 
@@ -150,7 +155,8 @@ bool snmp::process_PDU(const uint8_t *p, const size_t len, oid_req_t *const oids
 	// varbind list sequence
 	uint8_t type_vb_list = *p++;
 	if (type_vb_list != 0x30) {
-		printf("SNMP::process_PDU: expecting varbind list sequence, got %02x\n", type_vb_list);
+		if (verbose)
+			printf("SNMP::process_PDU: expecting varbind list sequence, got %02x\n", type_vb_list);
 		return false;
 	}
 	uint8_t len_vb_list = *p++;
@@ -162,7 +168,8 @@ bool snmp::process_PDU(const uint8_t *p, const size_t len, oid_req_t *const oids
 		uint8_t seq_length = *pnt++;
 
 		if (&pnt[seq_length] > &p[len_vb_list]) {
-			printf("SNMP: length field out of bounds (PDU)\n");
+			if (verbose)
+				printf("SNMP: length field out of bounds (PDU)\n");
 			return false;
 		}
 
@@ -171,7 +178,8 @@ bool snmp::process_PDU(const uint8_t *p, const size_t len, oid_req_t *const oids
 			pnt += seq_length;
 		}
 		else {
-			printf("SNMP: unexpected/invalid type %02x\n", seq_type);
+			if (verbose)
+				printf("SNMP: unexpected/invalid type %02x\n", seq_type);
 			return false;
 		}
 	}
@@ -182,7 +190,8 @@ bool snmp::process_PDU(const uint8_t *p, const size_t len, oid_req_t *const oids
 bool snmp::process_BER(const uint8_t *p, const size_t len, oid_req_t *const oids_req, const bool is_getnext, const int is_top)
 {
 	if (len < 2) {
-		printf("SNMP: BER too small\n");
+		if (verbose)
+			printf("SNMP: BER too small\n");
 		return false;
 	}
 
@@ -195,7 +204,8 @@ bool snmp::process_BER(const uint8_t *p, const size_t len, oid_req_t *const oids
 		uint8_t length = *pnt++;
 
 		if (&pnt[length] > &p[len]) {
-			printf("SNMP: length field out of bounds (BER)\n");
+			if (verbose)
+				printf("SNMP: length field out of bounds (BER)\n");
 			return false;
 		}
 
@@ -264,7 +274,8 @@ bool snmp::process_BER(const uint8_t *p, const size_t len, oid_req_t *const oids
 			pnt += length;
 		}
 		else {
-			printf("SNMP: invalid type %02x\n", type);
+			if (verbose)
+				printf("SNMP: invalid type %02x\n", type);
 			return false;
 		}
 	}
@@ -303,7 +314,8 @@ void snmp::gen_reply(oid_req_t & oids_req, uint8_t **const packet_out, size_t *c
 
 		varbind->add(new snmp_oid(e));
 
-		// printf("SNMP requested: %s\n", e.c_str());
+		if (verbose)
+			printf("SNMP requested: %s\n", e.c_str());
 
 		std::optional<snmp_elem *> rc = sd->find_by_oid(e);
 
@@ -322,7 +334,8 @@ void snmp::gen_reply(oid_req_t & oids_req, uint8_t **const packet_out, size_t *c
 				varbind->add(new snmp_null());
 		}
 		else {
-			printf("SNMP: requested %s not found, returning null\n", e.c_str());
+			if (verbose)
+				printf("SNMP: requested %s not found, returning null\n", e.c_str());
 
 			// FIXME snmp_null?
 			varbind->add(new snmp_null());

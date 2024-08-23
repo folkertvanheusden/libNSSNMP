@@ -26,11 +26,12 @@ typedef struct _oid_req_t_ {
 class snmp
 {
 private:
-	snmp_data *const sd { nullptr };
-	int              fd { -1      };
-	uint8_t         *buffer { nullptr };  // for receiving requests
-	std::thread     *th { nullptr };
+	snmp_data *const  sd { nullptr };
+	int               fd { -1      };
+	uint8_t          *buffer { nullptr };  // for receiving requests
+	std::thread      *th { nullptr };
 	std::atomic_bool *const stop { nullptr };
+	const bool        verbose { false };
 
 	bool     process_BER(const uint8_t *p, const size_t len, oid_req_t *const oids_req, const bool is_getnext, const int is_top);
 	uint64_t get_INTEGER(const uint8_t *p, const size_t len);
@@ -45,7 +46,7 @@ private:
 	void     thread     ();
 
 public:
-	snmp(snmp_data *const sd, std::atomic_bool *const stop);
+	snmp(snmp_data *const sd, std::atomic_bool *const stop, const bool verbose);
 	snmp(const snmp &) = delete;
 	virtual ~snmp();
 };
