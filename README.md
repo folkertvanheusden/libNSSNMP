@@ -1,6 +1,6 @@
 libnssnmp
 ---------
-libnssnmp is a simple SNMP agent - it allows your application to respond to SNMP requests.
+libnssnmp is a simple SNMP agent - it allows your (C++) application to respond to SNMP requests.
 
 
 how to use it
