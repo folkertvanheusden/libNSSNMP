@@ -41,7 +41,7 @@ private:
 public:
 	snmp_data_type_static(const std::string & content);
 	snmp_data_type_static(const snmp_integer::snmp_integer_type type, const int content);
-	~snmp_data_type_static();
+	virtual ~snmp_data_type_static();
 
 	snmp_elem * get_data() override;
 };
@@ -131,7 +131,7 @@ private:
 
 public:
 	snmp_data_type_running_since();
-	~snmp_data_type_running_since();
+	virtual ~snmp_data_type_running_since();
 
 	snmp_elem * get_data() override;
 };
@@ -145,7 +145,7 @@ public:
 	snmp_data_type_oid(const std::string & oid) : oid(oid) {
 	}
 
-	~snmp_data_type_oid() {
+	virtual ~snmp_data_type_oid() {
 	}
 
 	snmp_elem * get_data() override { return new snmp_oid(oid); }

@@ -13,11 +13,6 @@ snmp_elem::~snmp_elem()
 {
 }
 
-std::pair<uint8_t *, uint8_t> snmp_elem::get_payload() const
-{
-	return { nullptr, 0 };
-}
-
 //---
 
 snmp_integer::snmp_integer(const snmp_integer_type type, const uint64_t v, const int len) :
