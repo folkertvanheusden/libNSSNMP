@@ -34,6 +34,7 @@ snmp::~snmp()
 {
 	close(fd);
 
+	*stop = true;
 	th->join();
 	delete th;
 
