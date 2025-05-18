@@ -9,4 +9,4 @@ See example/example.cpp in this repository.
 
 
 
-(C) 2022-2024 by Folkert van Heusden <mail@vanheusden.com>
+(C) 2022-2025 by Folkert van Heusden <mail@vanheusden.com>
