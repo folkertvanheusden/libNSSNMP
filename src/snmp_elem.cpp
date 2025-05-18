@@ -91,14 +91,14 @@ uint8_t snmp_sequence::get_size() const
 
 std::pair<uint8_t *, uint8_t> snmp_sequence::get_payload() const
 {
-	uint8_t *out = new uint8_t[256];
+	uint8_t *out = new uint8_t[258];
 	out[0] = 0x30;
 
 	uint8_t o = 2;
 
 	for(auto e : sequence) {
 		auto pl = e->get_payload();
-		if (o + pl.second > 256)
+		if (o + pl.second >= 257)
 			break;
 
 		memcpy(&out[o], pl.first, pl.second);
