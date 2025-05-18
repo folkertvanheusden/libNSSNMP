@@ -18,14 +18,14 @@ int main(int argc, char *argv[])
 	signal(SIGINT, signal_handler);
 
 	snmp_data sd;
-	sd.register_oid("1.3.6.1.2.1.1.1.0",            "libnssnmp");  // static string
-	sd.register_oid("1.3.6.1.2.1.1.3.0",            new snmp_data_type_running_since());
-	sd.register_oid("1.3.6.1.2.1.1.4.0",            "Folkert van Heusden <folkert@vanheusden.com>");
-	sd.register_oid("1.3.6.1.2.1.1.5.0",            "libnssnmp");
-	sd.register_oid("1.3.6.1.2.1.1.6.0",            "The Netherlands, Europe, Earth");
-	sd.register_oid("1.3.6.1.2.1.1.7.0",            snmp_integer::si_integer, 254);
-	sd.register_oid("1.3.6.1.2.1.1.8.0",            snmp_integer::si_ticks, 0);
-	sd.register_oid("1.3.6.1.4.1.2021.100.3",       __DATE__);
+	sd.register_oid("1.3.6.1.2.1.1.1.0",      "libnssnmp");  // static string
+	sd.register_oid("1.3.6.1.2.1.1.3.0",      new snmp_data_type_running_since());
+	sd.register_oid("1.3.6.1.2.1.1.4.0",      "Folkert van Heusden <folkert@vanheusden.com>");
+	sd.register_oid("1.3.6.1.2.1.1.5.0",      "libnssnmp");
+	sd.register_oid("1.3.6.1.2.1.1.6.0",      "The Netherlands, Europe, Earth");
+	sd.register_oid("1.3.6.1.2.1.1.7.0",      snmp_integer::si_integer, 254);
+	sd.register_oid("1.3.6.1.2.1.1.8.0",      snmp_integer::si_ticks, 0);
+	sd.register_oid("1.3.6.1.4.1.2021.100.3", __DATE__);
 
 	sd.register_oid("1.3.6.1.2.3.4", snmp_integer::si_integer, 123);  // 123 is a static integer value
 
