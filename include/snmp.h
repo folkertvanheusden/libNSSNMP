@@ -1,7 +1,8 @@
-// (C) 2022-2025 by folkert van heusden <mail@vanheusden.com>, released under MIT license
+// (C) 2022-2025 by folkert van heusden <mail@vanheusden.com>, released under Apache License v2.0
 #pragma once
+
 #include <atomic>
-#include <stdint.h>
+#include <cstdint>
 #include <string>
 #include <thread>
 #include <vector>
