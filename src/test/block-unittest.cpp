@@ -1,9 +1,10 @@
+#include <stdexcept>
 #include <gtest/gtest.h>
 
 #include "../block.h"
 
 
-TEST(Block, tests) {
+TEST(Block, testsconst) {
 	const uint8_t testdata1[] { 0x01, 0x2, 0x03, 0x04, 0x05, 0xde, 0xad, 0xbe, 0xef };  // random data
 	block b1(testdata1, sizeof testdata1);
 	EXPECT_EQ(memcmp(b1.get_data(), testdata1, sizeof testdata1), 0);
@@ -53,4 +54,36 @@ TEST(Block, tests) {
 	block *b6 = b1.duplicate();
 	EXPECT_EQ(*b6, b1);
 	delete b6;
+}
+
+void throw_function(block *const b1)
+{
+	b1->get_byte();
+}
+
+TEST(Block, testsmodify) {
+	const uint8_t testdata1[] { 0x01, 0x2, 0x03, 0x04, 0x05, 0xde, 0xad, 0xbe, 0xef };  // random data
+	block b1(testdata1, sizeof testdata1);
+
+	EXPECT_EQ(b1.get_byte(), 0x01);
+	EXPECT_EQ(b1.get_byte(), 0x02);
+
+	block b2(b1.get_bytes(2));
+	EXPECT_EQ(b2.dump(), "03 04");
+	EXPECT_EQ(b2.is_empty(), false);
+
+	b1.skip_bytes(1);
+	EXPECT_EQ(b1.get_byte(), 0xde);
+
+	EXPECT_EQ(b1.get_bytes_left(), 3);
+	EXPECT_EQ(b1.is_empty(), false);
+
+	uint8_t to[3];
+	b1.get_bytes(3, to);
+	EXPECT_EQ(b1.is_empty(), true);
+	EXPECT_EQ(to[0], 0xad);
+	EXPECT_EQ(to[1], 0xbe);
+	EXPECT_EQ(to[2], 0xef);
+
+	EXPECT_THROW(throw_function(&b1), std::range_error);
 }
