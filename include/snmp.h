@@ -13,10 +13,11 @@
 
 typedef struct _oid_req_t_ {
 	std::vector<std::string> oids;
-	uint64_t req_id { 0 };
-	int err { 0 }, err_idx { 0 };
+	uint64_t req_id  { 0 };
+	int      err     { 0 };
+	int      err_idx { 0 };
 
-	int version { 0 };
+	int version      { 0 };
 	std::string community;
 
 	_oid_req_t_() {
