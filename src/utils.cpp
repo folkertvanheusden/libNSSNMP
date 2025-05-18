@@ -40,7 +40,7 @@ std::vector<std::string> split(std::string in, const std::string & splitter)
 
 std::string myformat(const char *const fmt, ...)
 {
-        char *buffer = nullptr;
+        char   *buffer = nullptr;
         va_list ap;
         va_start(ap, fmt);
         if (vasprintf(&buffer, fmt, ap) == -1) {

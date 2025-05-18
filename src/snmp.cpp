@@ -17,6 +17,8 @@
 snmp::snmp(snmp_data *const sd, std::atomic_bool *const stop, const bool verbose, const int port): sd(sd), stop(stop), verbose(verbose)
 {
 	fd = socket(AF_INET, SOCK_DGRAM, 0);
+	if (fd == -1)
+		throw "Failed to bind to create socket";
 
 	sockaddr_in servaddr { };
 	servaddr.sin_family      = AF_INET; // IPv4
@@ -25,6 +27,7 @@ snmp::snmp(snmp_data *const sd, std::atomic_bool *const stop, const bool verbose
 
 	if (bind(fd, reinterpret_cast<const struct sockaddr *>(&servaddr), sizeof servaddr) == -1)
 		throw "Failed to bind to SNMP UDP port";
+
 	buffer = new uint8_t[SNMP_RECV_BUFFER_SIZE]();
 
 	th = new std::thread(&snmp::thread, this);
@@ -332,7 +335,7 @@ void snmp::thread()
 			gen_reply(or_, &packet_out, &output_size);
 			if (output_size)
 				(void)sendto(fd, packet_out, output_size, 0, reinterpret_cast<sockaddr *>(&clientaddr), len);
-			free(packet_out);
+			delete [] packet_out;
 		}
 	}
 }
