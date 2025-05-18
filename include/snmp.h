@@ -1,4 +1,4 @@
-// (C) 2022-2024 by folkert van heusden <mail@vanheusden.com>, released under MIT license
+// (C) 2022-2025 by folkert van heusden <mail@vanheusden.com>, released under MIT license
 #pragma once
 #include <atomic>
 #include <stdint.h>
@@ -9,7 +9,7 @@
 #include "snmp_data.h"
 
 
-#define SNMP_RECV_BUFFER_SIZE 1600
+#define SNMP_RECV_BUFFER_SIZE 65507  // 6556 - headers
 
 typedef struct _oid_req_t_ {
 	std::vector<std::string> oids;
