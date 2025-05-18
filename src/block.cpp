@@ -59,6 +59,14 @@ bool block::operator==(const block & other) const
 	return memcmp(other.get_data(), get_data(), get_size()) == 0;
 }
 
+bool block::operator!=(const block & other) const
+{
+	if (other.get_size() != get_size())
+		return true;
+
+	return memcmp(other.get_data(), get_data(), get_size()) != 0;
+}
+
 void block::push_to_vector(std::vector<uint8_t> & to) const
 {
 	size_t org_size = to.size();

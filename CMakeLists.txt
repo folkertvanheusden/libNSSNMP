@@ -32,3 +32,34 @@ install(TARGETS libnssnmp
 configure_file(libnssnmp.pc.in libnssnmp.pc @ONLY)
 
 install(FILES ${CMAKE_BINARY_DIR}/libnssnmp.pc DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/pkgconfig)
+
+set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
+set(THREADS_PREFER_PTHREAD_FLAG TRUE)
+find_package(Threads)
+
+# ----
+
+include(FetchContent)
+FetchContent_Declare(
+  googletest
+  GIT_REPOSITORY https://github.com/google/googletest.git
+  GIT_TAG        v1.17.0
+)
+FetchContent_MakeAvailable(googletest)
+
+enable_testing()
+
+SET(LINKING_STUFF
+  GTest::gtest_main
+  Threads::Threads
+)
+
+add_executable(
+  unittest-block
+  src/test/block-unittest.cpp
+  src/block.cpp
+)
+target_link_libraries(
+  unittest-block
+  ${LINKING_STUFF}
+)
