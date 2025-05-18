@@ -6,9 +6,6 @@
 #include <libnssnmp/snmp.h>
 
 
-snmp      *s  { nullptr };
-snmp_data *sd { nullptr };
-
 std::atomic_bool stop { false };
 
 void signal_handler(int s)
@@ -19,6 +16,9 @@ void signal_handler(int s)
 int main(int argc, char *argv[])
 {
 	signal(SIGINT, signal_handler);
+
+	snmp      *s  { nullptr };
+	snmp_data *sd { nullptr };
 
 	try {
 		sd = new snmp_data();
