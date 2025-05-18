@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.9)
 
-project(libnssnmp VERSION 2.0.0 DESCRIPTION "a simple snmp agent library")
+project(libnssnmp VERSION 3.0.0 DESCRIPTION "a simple snmp agent library")
 
 set(CMAKE_BUILD_TYPE RelWithDebInfo)
 
@@ -59,7 +59,24 @@ add_executable(
   src/test/block-unittest.cpp
   src/block.cpp
 )
+target_compile_options(unittest-block PRIVATE -DUNITTEST)
 target_link_libraries(
   unittest-block
+  ${LINKING_STUFF}
+)
+
+add_executable(
+  unittest-snmp
+  src/test/snmp-unittest.cpp
+  src/block.cpp
+  src/snmp.cpp
+  src/snmp_data.cpp
+  src/snmp_elem.cpp
+  src/utils.cpp
+)
+target_compile_options(unittest-snmp PRIVATE -DUNITTEST)
+target_include_directories(unittest-snmp PRIVATE include)
+target_link_libraries(
+  unittest-snmp
   ${LINKING_STUFF}
 )

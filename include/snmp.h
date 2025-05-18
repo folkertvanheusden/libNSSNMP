@@ -6,6 +6,9 @@
 #include <string>
 #include <thread>
 #include <vector>
+#ifdef UNITTEST
+#include <gtest/gtest.h>
+#endif
 
 #include "snmp_data.h"
 
@@ -37,6 +40,10 @@ private:
 	std::atomic_bool *const stop { nullptr };
 	const bool        verbose    { false   };
 
+#ifdef UNITTEST
+	FRIEND_TEST(Snmp, test);
+#endif
+
 	bool     process_BER     (block *const b, oid_req_t *const oids_req, const bool is_getnext, const int is_top);
 	uint64_t get_INTEGER     (block *const b);
 	bool     get_OID         (block *const b, std::string *const oid_out);
@@ -50,7 +57,7 @@ private:
 	void     thread          ();
 
 public:
-	snmp(snmp_data *const sd, std::atomic_bool *const stop, const bool verbose);
+	snmp(snmp_data *const sd, std::atomic_bool *const stop, const bool verbose, const int port = 161);
 	snmp(const snmp &) = delete;
 	virtual ~snmp();
 };

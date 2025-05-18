@@ -14,14 +14,14 @@
 #include "utils.h"
 
 
-snmp::snmp(snmp_data *const sd, std::atomic_bool *const stop, const bool verbose): sd(sd), stop(stop), verbose(verbose)
+snmp::snmp(snmp_data *const sd, std::atomic_bool *const stop, const bool verbose, const int port): sd(sd), stop(stop), verbose(verbose)
 {
 	fd = socket(AF_INET, SOCK_DGRAM, 0);
 
 	sockaddr_in servaddr { };
 	servaddr.sin_family      = AF_INET; // IPv4
 	servaddr.sin_addr.s_addr = INADDR_ANY;
-	servaddr.sin_port        = htons(161);
+	servaddr.sin_port        = htons(port);
 
 	if (bind(fd, reinterpret_cast<const struct sockaddr *>(&servaddr), sizeof servaddr) == -1)
 		throw "Failed to bind to SNMP UDP port";
@@ -43,6 +43,8 @@ snmp::~snmp()
 uint64_t snmp::get_INTEGER(block *const b)
 {
 	uint64_t v = 0;
+	if (b->get_bytes_left() > 8)
+		throw std::runtime_error("integer too long");
 	while(b->is_empty() == false) {
 		v <<= 8;
 		v |= b->get_byte();
@@ -300,8 +302,8 @@ void snmp::thread()
 	pollfd fds[] { { fd, POLLIN, 0 } };
 
 	while(!*stop) {
-		sockaddr_in clientaddr   {   };
-		socklen_t   len          { sizeof clientaddr };
+		sockaddr_in clientaddr {   };
+		socklen_t   len        { sizeof clientaddr };
 
 		if (poll(fds, 1, 100) == 0)
 			continue;
