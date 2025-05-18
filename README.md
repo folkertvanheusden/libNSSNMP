@@ -69,6 +69,8 @@ There is also:
 
 This will start a thread that processes incoming snmp requests. The stop_flag can be used to terminate the thread, just deleting the snmp object does this as well.
 
+You can also add a 4th parameter which sets the port-number to listen on. Usually this is port 161 (requires root) which is the default.
+
 
 See also example/example.cpp in this repository for an implementation example.
 
