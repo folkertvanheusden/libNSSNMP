@@ -203,7 +203,6 @@ void snmp_data::register_oid(const std::string & oid, snmp_data_type *const e)
 	std::vector<snmp_data_type *> *p_lut = &data;
 
 	std::vector<std::string>       parts = split(oid, ".");
-
 	std::string                    cur_oid;
 
 	std::unique_lock<std::mutex>   lck(lock);

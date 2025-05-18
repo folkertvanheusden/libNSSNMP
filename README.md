@@ -1,29 +1,27 @@
-libnssnmp
----------
+# libnssnmp
 libnssnmp is a simple SNMP agent - it allows your (C++) application to respond to SNMP requests.
 
 
-how to use it
--------------
+# how to use it
 
-== steps ==
+## steps
 
 1. instantiate an snmp_data object
 2. configure each variable you want to return in the snmp_data object
 3. instantiate an snmp object
 
 
-=== 1. instantiate an snmp_data object ===
+### 1. instantiate an snmp_data object
 
     snmp_data sd;
 
 
-=== 2. configure each variable you want to return in the snmp_data object ===
+### 2. configure each variable you want to return in the snmp_data object
 
 In this step you will add objects that are published. The objects will be deleted when the snmp_data object is deleted.
 
 
-==== static data ====
+#### static data
 
 This is a string, it will be returned as-is:
 
@@ -44,7 +42,7 @@ Publish integer values. The second parameter is the type. Can be:
 The values above are all static.
 
 
-==== dynamic data ====
+#### dynamic data
 
 As the library publishes the data from a thread, changing data must use atomic variables.
 
@@ -60,7 +58,7 @@ There is also:
     snmp_data_type_stats_atomic_uint32_t for std::atomic_uint32_t.
 
 
-=== 3. instantiate an snmp object ===
+### 3. instantiate an snmp object
 
     std::atomic_bool stop_flag { false };
 ...
