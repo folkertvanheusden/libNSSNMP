@@ -20,7 +20,7 @@ set_target_properties(libnssnmp PROPERTIES SOVERSION ${PROJECT_VERSION_MAJOR})
 
 install(DIRECTORY include/
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/libnssnmp
-    FILES_MATCHING PATTERN "*.h"
+    FILES_MATCHING PATTERN "snmp*.h"
 )
 
 target_include_directories(libnssnmp PRIVATE include)
@@ -38,6 +38,8 @@ set(THREADS_PREFER_PTHREAD_FLAG TRUE)
 find_package(Threads)
 
 # ----
+
+SET(INSTALL_GTEST OFF)
 
 include(FetchContent)
 FetchContent_Declare(
