@@ -46,6 +46,10 @@ int main(int argc, char *argv[])
 	sd.register_oid("1.3.6.1.2.3.8.0", new snmp_data_type_stats_uint32_t(&an_uint32));
 
 	snmp s(&sd, &stop, true);  // set to 'false' to suppress any errors/warnings
+	if (s.begin() == false) {
+		perror("snmp::begin failed");
+		return 1;
+	}
 
 	while(!stop)
 		sleep(1);

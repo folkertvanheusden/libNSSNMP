@@ -9,6 +9,7 @@ libnssnmp is a simple SNMP agent - it allows your (C++) application to respond t
 1. instantiate an snmp_data object
 2. configure each variable you want to return in the snmp_data object
 3. instantiate an snmp object
+4. start the snmp object
 
 
 ### 1. instantiate an snmp_data object
@@ -65,9 +66,16 @@ There is also:
 
     snmp s(&sd, &stop_flag, false);
 
-This will start a thread that processes incoming snmp requests. The stop_flag can be used to terminate the thread, just deleting the snmp object does this as well.
-
 You can also add a 4th parameter which sets the port-number to listen on. Usually this is port 161 (requires root) which is the default.
+
+
+### 4. start the snmp object
+
+    if (s.begin() == false) {
+        // error handling
+    }
+
+This will start a thread that processes incoming snmp requests. The stop_flag can be used to terminate the thread, just deleting the snmp object does this as well.
 
 
 See also example/example.cpp in this repository for an implementation example.

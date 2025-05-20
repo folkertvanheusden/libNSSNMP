@@ -33,12 +33,13 @@ class block;
 class snmp
 {
 private:
-	snmp_data        *const sd   { nullptr };
-	int               fd         { -1      };
-	uint8_t          *buffer     { nullptr };  // for receiving requests
-	std::thread      *th         { nullptr };
-	std::atomic_bool *const stop { nullptr };
-	const bool        verbose    { false   };
+	snmp_data        *const sd        { nullptr };
+	int               fd              { -1      };
+	uint8_t          *buffer          { nullptr };  // for receiving requests
+	std::thread      *th              { nullptr };
+	std::atomic_bool *const stop_flag { nullptr };
+	const bool        verbose         { false   };
+	const int         port            { 161     };
 
 #ifdef UNITTEST
 	FRIEND_TEST(Snmp, test);
@@ -60,4 +61,7 @@ public:
 	snmp(snmp_data *const sd, std::atomic_bool *const stop, const bool verbose, const int port = 161);
 	snmp(const snmp &) = delete;
 	virtual ~snmp();
+
+	bool begin();
+	void stop();
 };

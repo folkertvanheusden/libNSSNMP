@@ -1,6 +1,6 @@
-cmake_minimum_required(VERSION 3.9)
+cmake_minimum_required(VERSION 3.12)
 
-project(libnssnmp VERSION 3.0.0 DESCRIPTION "a simple snmp agent library")
+project(libnssnmp VERSION 4.0.0 DESCRIPTION "a simple snmp agent library")
 
 set(CMAKE_BUILD_TYPE RelWithDebInfo)
 

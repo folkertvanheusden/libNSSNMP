@@ -14,11 +14,23 @@
 #include "utils.h"
 
 
-snmp::snmp(snmp_data *const sd, std::atomic_bool *const stop, const bool verbose, const int port): sd(sd), stop(stop), verbose(verbose)
+snmp::snmp(snmp_data *const sd, std::atomic_bool *const stop_flag, const bool verbose, const int port): sd(sd), stop_flag(stop_flag), verbose(verbose), port(port)
 {
+}
+
+snmp::~snmp()
+{
+	stop();
+}
+
+bool snmp::begin()
+{
+	if (fd != -1)
+		return false;
+
 	fd = socket(AF_INET, SOCK_DGRAM, 0);
 	if (fd == -1)
-		throw "Failed to bind to create socket";
+		return false;
 
 	sockaddr_in servaddr { };
 	servaddr.sin_family      = AF_INET; // IPv4
@@ -26,22 +38,32 @@ snmp::snmp(snmp_data *const sd, std::atomic_bool *const stop, const bool verbose
 	servaddr.sin_port        = htons(port);
 
 	if (bind(fd, reinterpret_cast<const struct sockaddr *>(&servaddr), sizeof servaddr) == -1)
-		throw "Failed to bind to SNMP UDP port";
+		return false;
 
 	buffer = new uint8_t[SNMP_RECV_BUFFER_SIZE]();
 
+	*stop_flag = false;
 	th = new std::thread(&snmp::thread, this);
+
+	return true;
 }
 
-snmp::~snmp()
+void snmp::stop()
 {
-	close(fd);
+	if (fd != -1) {
+		close(fd);
+		fd = -1;
+	}
 
-	*stop = true;
-	th->join();
-	delete th;
+	if (th) {
+		*stop_flag = true;
+		th->join();
+		delete th;
+		th = nullptr;
+	}
 
 	delete [] buffer;
+	buffer = nullptr;
 }
 
 uint64_t snmp::get_INTEGER(block *const b)
@@ -295,7 +317,7 @@ void snmp::gen_reply(oid_req_t & oids_req, uint8_t **const packet_out, size_t *c
 	}
 
 	auto rc = se->get_payload();
-	*packet_out = rc.first;
+	*packet_out  = rc.first;
 	*output_size = rc.second;
 
 	delete se;
@@ -305,8 +327,8 @@ void snmp::thread()
 {
 	pollfd fds[] { { fd, POLLIN, 0 } };
 
-	while(!*stop) {
-		sockaddr_in clientaddr {   };
+	while(!*stop_flag) {
+		sockaddr_in clientaddr {                   };
 		socklen_t   len        { sizeof clientaddr };
 
 		if (poll(fds, 1, 100) == 0)
