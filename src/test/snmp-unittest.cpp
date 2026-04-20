@@ -44,13 +44,14 @@ TEST(Snmp, test) {
 	block b5(data5, sizeof data5);
 	EXPECT_EQ(s.get_INTEGER(&b5), 0xea55aa);
 
-	const uint8_t data6[] { 0xea, 0x55, 0xaa, 0x78 };
+	const uint8_t data6[] { 0xea, 0x55, 0x01, 0x78 };
 	block b6(data6, sizeof data6);
 	b6.get_byte();
-	uint8_t type6 = 0, length6 = 0;
+	uint8_t  type6   = 0;
+	uint64_t length6 = 0;
 	s.get_type_length(&b6, &type6, &length6);
 	EXPECT_EQ(type6, 0x55);
-	EXPECT_EQ(length6, 0xaa);
+	EXPECT_EQ(length6, 0x01);
 
 	// OID test
 	const uint8_t data7[] { 0x2b, 0x6, 0x1, 0x4, 0x1, 0x8f, 0x65, 0x64, 0x03 };

@@ -1,4 +1,4 @@
-// (C) 2022-2025 by folkert van heusden <mail@vanheusden.com>, released under Apache License v2.0
+// (C) 2022-2026 by folkert van heusden <mail@vanheusden.com>, released under Apache License v2.0
 #include <cstdint>
 #include <stdexcept>
 #include <thread>
@@ -81,10 +81,26 @@ uint64_t snmp::get_INTEGER(block *const b)
 	return v;
 }
 
-void snmp::get_type_length(block *const b, uint8_t *const type, uint8_t *const length)
+uint64_t snmp::get_TLV_length(block *const b)
+{
+	uint8_t first = b->get_byte();
+	if (first < 128)
+		return first;
+	first &= 127;
+	if (first > 8)
+		throw std::runtime_error("length too long");
+	uint64_t length = 0;
+	for(int i=0; i<first; i++) {
+		length <<= 8;
+		length |= b->get_byte();
+	}
+	return length;
+}
+
+void snmp::get_type_length(block *const b, uint8_t *const type, uint64_t *const length)
 {
 	*type   = b->get_byte();
-	*length = b->get_byte();
+	*length = get_TLV_length(b);
 }
 
 bool snmp::get_OID(block *const b, std::string *const oid_out)
@@ -125,7 +141,8 @@ bool snmp::get_OID(block *const b, std::string *const oid_out)
 
 bool snmp::process_PDU(block *const b, oid_req_t *const oids_req, const bool is_getnext)
 {
-	uint8_t pdu_type = 0, pdu_length = 0;
+	uint8_t  pdu_type   = 0;
+	uint64_t pdu_length = 0;
 
 	// ID
 	get_type_length(b, &pdu_type, &pdu_length);
