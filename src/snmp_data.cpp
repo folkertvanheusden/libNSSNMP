@@ -43,7 +43,7 @@ void snmp_data_type::set_tree_data(const std::string & oid)
 
 	std::size_t dot = oid.rfind('.');
 	if (dot != std::string::npos)
-		oid_idx = atoi(oid.substr(dot + 1).c_str());
+		oid_idx = std::stoi(oid.substr(dot + 1).c_str());
 }
 
 snmp_elem * snmp_data_type::get_data()
