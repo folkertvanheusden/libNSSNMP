@@ -1,7 +1,8 @@
-// (C) 2022-2024 by folkert van heusden <mail@vanheusden.com>, released under Apache License v2.0
+// (C) 2022-2026 by folkert van heusden <mail@vanheusden.com>, released under Apache License v2.0
 #include <algorithm>
 #include <cassert>
 #include <cstdint>
+#include <stdexcept>
 
 #include "snmp_data.h"
 #include "utils.h"
@@ -317,6 +318,9 @@ std::string snmp_data::find_next_oid(const std::string & oid)
 		parent = p_lut->at(0);
 		p_lut = parent->get_children();
 	}
+
+	if (!parent)
+		throw std::runtime_error("no parent found");
 
 	if (parent->get_oid() != oid)
 		return parent->get_oid();
