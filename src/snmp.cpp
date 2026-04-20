@@ -39,6 +39,7 @@ bool snmp::begin()
 
 	if (bind(fd, reinterpret_cast<const struct sockaddr *>(&servaddr), sizeof servaddr) == -1) {
 		close(fd);
+		fd = -1;
 		return false;
 	}
 
