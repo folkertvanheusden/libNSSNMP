@@ -36,7 +36,7 @@ snmp_integer::~snmp_integer()
 {
 }
 
-std::pair<uint8_t *, uint8_t> snmp_integer::get_payload() const
+std::pair<uint8_t *, size_t> snmp_integer::get_payload() const
 {
 	uint8_t snmp_type = 0x00;
 
@@ -90,7 +90,7 @@ uint8_t snmp_sequence::get_size() const
 	return pl.second;
 }
 
-std::pair<uint8_t *, uint8_t> snmp_sequence::get_payload() const
+std::pair<uint8_t *, size_t> snmp_sequence::get_payload() const
 {
 	uint8_t *out = new uint8_t[258];
 	out[0] = 0x30;
@@ -126,7 +126,7 @@ snmp_null::~snmp_null()
 {
 }
 
-std::pair<uint8_t *, uint8_t> snmp_null::get_payload() const
+std::pair<uint8_t *, size_t> snmp_null::get_payload() const
 {
 	uint8_t *out = new uint8_t[2];
 	out[0] = 0x05;
@@ -149,7 +149,7 @@ snmp_octet_string::~snmp_octet_string()
 	delete [] v;
 }
 
-std::pair<uint8_t *, uint8_t> snmp_octet_string::get_payload() const
+std::pair<uint8_t *, size_t> snmp_octet_string::get_payload() const
 {
 	uint8_t  out_len = len;
 	uint8_t  pl_len  = len - 2;
@@ -215,7 +215,7 @@ snmp_oid::~snmp_oid()
 	delete [] v;
 }
 
-std::pair<uint8_t *, uint8_t> snmp_oid::get_payload() const
+std::pair<uint8_t *, size_t> snmp_oid::get_payload() const
 {
 	uint8_t  out_len = len;
 	uint8_t  pl_len  = len - 2;
@@ -240,7 +240,7 @@ snmp_pdu::~snmp_pdu()
 {
 }
 
-std::pair<uint8_t *, uint8_t> snmp_pdu::get_payload() const
+std::pair<uint8_t *, size_t> snmp_pdu::get_payload() const
 {
 	auto out = snmp_sequence::get_payload();
 
