@@ -301,7 +301,6 @@ std::string snmp_data::find_next_oid(const std::string & oid)
 		cur_oid += parts.at(i);
 
 		ssize_t idx = find_oid_in_vector(p_lut, cur_oid);
-
 		if (idx == -1)
 			break;
 
@@ -320,7 +319,7 @@ std::string snmp_data::find_next_oid(const std::string & oid)
 	}
 
 	if (!parent)
-		throw std::runtime_error("no parent found");
+		return "";
 
 	if (parent->get_oid() != oid)
 		return parent->get_oid();
