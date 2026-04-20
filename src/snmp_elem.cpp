@@ -82,7 +82,7 @@ void snmp_sequence::add(const snmp_elem * const e)
 	sequence.push_back(e);
 }
 
-uint8_t snmp_sequence::get_size() const
+size_t snmp_sequence::get_size() const
 {
 	auto pl = get_payload();
 	delete [] pl.first;

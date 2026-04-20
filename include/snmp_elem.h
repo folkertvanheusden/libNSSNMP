@@ -1,6 +1,7 @@
-// (C) 2020-2025 by folkert van heusden <mail@vanheusden.com>, released under MIT license
+// (C) 2020-2026 by folkert van heusden <mail@vanheusden.com>, released under MIT license
 #pragma once
 
+#include <cstddef>
 #include <cstdint>
 #include <string>
 #include <utility>
@@ -10,13 +11,13 @@
 class snmp_elem
 {
 protected:
-	uint8_t len { 255 };
+	size_t len { 255 };
 
 public:
 	snmp_elem();
 	virtual ~snmp_elem();
 
-	virtual uint8_t get_size() const { return len; }
+	virtual size_t get_size() const { return len; }
 
 	virtual std::pair<uint8_t *, size_t> get_payload() const = 0;
 };
@@ -53,7 +54,7 @@ public:
 
 	void add(const snmp_elem * const e);
 
-	uint8_t get_size() const override;
+	size_t get_size() const override;
 
 	std::pair<uint8_t *, size_t> get_payload() const override;
 };

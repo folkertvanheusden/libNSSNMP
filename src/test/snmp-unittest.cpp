@@ -47,8 +47,8 @@ TEST(Snmp, test) {
 	const uint8_t data6[] { 0xea, 0x55, 0x01, 0x78 };
 	block b6(data6, sizeof data6);
 	b6.get_byte();
-	uint8_t  type6   = 0;
-	uint64_t length6 = 0;
+	uint8_t type6   = 0;
+	size_t  length6 = 0;
 	s.get_type_length(&b6, &type6, &length6);
 	EXPECT_EQ(type6, 0x55);
 	EXPECT_EQ(length6, 0x01);

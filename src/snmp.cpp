@@ -82,15 +82,15 @@ uint64_t snmp::get_INTEGER(block *const b)
 	return v;
 }
 
-uint64_t snmp::get_TLV_length(block *const b)
+size_t snmp::get_TLV_length(block *const b)
 {
 	uint8_t first = b->get_byte();
 	if (first < 128)
 		return first;
 	first &= 127;
-	if (first > 8)
+	if (first > sizeof(size_t))
 		throw std::runtime_error("length too long");
-	uint64_t length = 0;
+	size_t length = 0;
 	for(int i=0; i<first; i++) {
 		length <<= 8;
 		length |= b->get_byte();
@@ -98,7 +98,7 @@ uint64_t snmp::get_TLV_length(block *const b)
 	return length;
 }
 
-void snmp::get_type_length(block *const b, uint8_t *const type, uint64_t *const length)
+void snmp::get_type_length(block *const b, uint8_t *const type, size_t *const length)
 {
 	*type   = b->get_byte();
 	*length = get_TLV_length(b);
@@ -142,8 +142,8 @@ bool snmp::get_OID(block *const b, std::string *const oid_out)
 
 bool snmp::process_PDU(block *const b, oid_req_t *const oids_req, const bool is_getnext)
 {
-	uint8_t  pdu_type   = 0;
-	uint64_t pdu_length = 0;
+	uint8_t pdu_type   = 0;
+	size_t  pdu_length = 0;
 
 	// ID
 	get_type_length(b, &pdu_type, &pdu_length);
@@ -180,14 +180,14 @@ bool snmp::process_PDU(block *const b, oid_req_t *const oids_req, const bool is_
 			printf("SNMP::process_PDU: expecting varbind list sequence, got %02x\n", type_vb_list);
 		return false;
 	}
-	uint8_t len_vb_list = b->get_byte();
+	size_t len_vb_list = get_TLV_length(b);
 
 	if (len_vb_list) {
 		block temp(b->get_bytes(len_vb_list));
 
 		while(temp.is_empty() == false) {
 			uint8_t seq_type   = temp.get_byte();
-			uint8_t seq_length = temp.get_byte();
+			size_t  seq_length = get_TLV_length(&temp);
 
 			block seq_data(temp.get_bytes(seq_length));
 
@@ -211,7 +211,7 @@ bool snmp::process_BER(block *const b, oid_req_t *const oids_req, const bool is_
 
 	while(b->is_empty() == false) {
 		uint8_t type   = b->get_byte();
-		uint8_t length = b->get_byte();
+		size_t  length = get_TLV_length(b);
 
 		block temp(b->get_bytes(length));
 
@@ -282,66 +282,72 @@ void snmp::gen_reply(oid_req_t & oids_req, uint8_t **const packet_out, size_t *c
 {
 	snmp_sequence *se = new snmp_sequence();
 
-	se->add(new snmp_integer(snmp_integer::si_integer, oids_req.version));  // version
+	try {
+		se->add(new snmp_integer(snmp_integer::si_integer, oids_req.version));  // version
 
-	std::string community = oids_req.community;
-	if (community.empty())
-		community = "public";
+		std::string community = oids_req.community;
+		if (community.empty())
+			community = "public";
 
-	se->add(new snmp_octet_string((const uint8_t *)community.c_str(), community.size()));  // community string
+		se->add(new snmp_octet_string((const uint8_t *)community.c_str(), community.size()));  // community string
 
-	// request pdu
-	snmp_pdu *GetResponsePDU = new snmp_pdu(0xa2);
-	se->add(GetResponsePDU);
+		// request pdu
+		snmp_pdu *GetResponsePDU = new snmp_pdu(0xa2);
+		se->add(GetResponsePDU);
 
-	GetResponsePDU->add(new snmp_integer(snmp_integer::si_integer, oids_req.req_id));  // ID
+		GetResponsePDU->add(new snmp_integer(snmp_integer::si_integer, oids_req.req_id));  // ID
 
-	GetResponsePDU->add(new snmp_integer(snmp_integer::si_integer, oids_req.err));  // error
+		GetResponsePDU->add(new snmp_integer(snmp_integer::si_integer, oids_req.err));  // error
 
-	GetResponsePDU->add(new snmp_integer(snmp_integer::si_integer, oids_req.err_idx));  // error index
+		GetResponsePDU->add(new snmp_integer(snmp_integer::si_integer, oids_req.err_idx));  // error index
 
-	snmp_sequence *varbind_list = new snmp_sequence();
-	GetResponsePDU->add(varbind_list);
+		snmp_sequence *varbind_list = new snmp_sequence();
+		GetResponsePDU->add(varbind_list);
 
-	for(auto & e : oids_req.oids) {
-		snmp_sequence *varbind = new snmp_sequence();
-		varbind_list->add(varbind);
+		for(auto & e : oids_req.oids) {
+			snmp_sequence *varbind = new snmp_sequence();
+			varbind_list->add(varbind);
 
-		varbind->add(new snmp_oid(e));
+			varbind->add(new snmp_oid(e));
 
-		if (verbose)
-			printf("SNMP requested: %s\n", e.c_str());
-
-		std::optional<snmp_elem *> rc = sd->find_by_oid(e);
-
-		std::size_t dot       = e.rfind('.');
-		std::string ends_with = dot != std::string::npos ? e.substr(dot) : "";
-
-		if (!rc.has_value() && ends_with == ".0")
-			rc = sd->find_by_oid(e.substr(0, dot));
-
-		if (rc.has_value()) {
-			auto current_element = rc.value();
-
-			if (current_element)
-				varbind->add(current_element);
-			else
-				varbind->add(new snmp_null());
-		}
-		else {
 			if (verbose)
-				printf("SNMP: requested %s not found, returning null\n", e.c_str());
+				printf("SNMP requested: %s\n", e.c_str());
 
-			// FIXME snmp_null?
-			varbind->add(new snmp_null());
+			std::optional<snmp_elem *> rc = sd->find_by_oid(e);
+
+			std::size_t dot       = e.rfind('.');
+			std::string ends_with = dot != std::string::npos ? e.substr(dot) : "";
+
+			if (!rc.has_value() && ends_with == ".0")
+				rc = sd->find_by_oid(e.substr(0, dot));
+
+			if (rc.has_value()) {
+				auto current_element = rc.value();
+
+				if (current_element)
+					varbind->add(current_element);
+				else
+					varbind->add(new snmp_null());
+			}
+			else {
+				if (verbose)
+					printf("SNMP: requested %s not found, returning null\n", e.c_str());
+
+				// FIXME snmp_null?
+				varbind->add(new snmp_null());
+			}
 		}
+
+		auto rc = se->get_payload();
+		*packet_out  = rc.first;
+		*output_size = rc.second;
+
+		delete se;
 	}
-
-	auto rc = se->get_payload();
-	*packet_out  = rc.first;
-	*output_size = rc.second;
-
-	delete se;
+	catch(std::exception & e) {
+		delete se;
+		throw e;
+	}
 }
 
 void snmp::thread()
