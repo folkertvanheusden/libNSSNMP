@@ -105,7 +105,7 @@ block *block::substr(const size_t offset) const
 
 block *block::substr(const size_t offset, const size_t n) const
 {
-	if (offset + n >= get_size())
+	if (offset + n > get_size())
 		return nullptr;
 	return new block(get_data() + offset, n);
 }
