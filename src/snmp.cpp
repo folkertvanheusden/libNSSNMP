@@ -37,8 +37,10 @@ bool snmp::begin()
 	servaddr.sin_addr.s_addr = INADDR_ANY;
 	servaddr.sin_port        = htons(port);
 
-	if (bind(fd, reinterpret_cast<const struct sockaddr *>(&servaddr), sizeof servaddr) == -1)
+	if (bind(fd, reinterpret_cast<const struct sockaddr *>(&servaddr), sizeof servaddr) == -1) {
+		close(fd);
 		return false;
+	}
 
 	buffer = new uint8_t[SNMP_RECV_BUFFER_SIZE]();
 
