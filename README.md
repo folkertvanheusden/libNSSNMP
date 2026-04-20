@@ -82,6 +82,6 @@ See also example/example.cpp in this repository for an implementation example.
 
 
 
-(C) 2022-2026 by Folkert van Heusden <mail@vanheusden.com>
+(C) 2022-2026 by Folkert van Heusden <folkert@vanheusden.com>
 
 MIT license
