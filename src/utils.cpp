@@ -1,4 +1,4 @@
-// (C) 2022-2024 by folkert van heusden <mail@vanheusden.com>, released under Apache License v2.0
+// (C) 2022-2024 by folkert van heusden <mail@vanheusden.com>, released under MIT license
 #include <cerrno>
 #include <cstdarg>
 #include <cstdint>

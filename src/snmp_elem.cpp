@@ -1,6 +1,7 @@
-// (C) 2020-2025 by folkert van heusden <mail@vanheusden.com>, released under Apache License v2.0
+// (C) 2020-2026 by folkert van heusden <mail@vanheusden.com>, released under MIT license
 #include <cassert>
 #include <cstring>
+#include <stdexcept>
 
 #include "snmp_elem.h"
 
@@ -98,8 +99,10 @@ std::pair<uint8_t *, uint8_t> snmp_sequence::get_payload() const
 
 	for(auto e : sequence) {
 		auto pl = e->get_payload();
-		if (o + pl.second >= 257)
-			break;
+		if (o + pl.second >= 257) {
+			delete [] out;
+			throw std::runtime_error("payload too big");
+		}
 
 		memcpy(&out[o], pl.first, pl.second);
 		o += pl.second;
