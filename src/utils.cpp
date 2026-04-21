@@ -1,4 +1,4 @@
-// (C) 2022-2024 by folkert van heusden <mail@vanheusden.com>, released under MIT license
+// (C) 2022-2026 by folkert van heusden <mail@vanheusden.com>, released under MIT license
 #include <cerrno>
 #include <cstdarg>
 #include <cstdint>
@@ -19,8 +19,7 @@ std::vector<std::string> split(std::string in, const std::string & splitter)
 		if (pos == std::string::npos)
 			break;
 
-		std::string before = in.substr(0, pos);
-		out.push_back(before);
+		out.push_back(in.substr(0, pos));
 
 		size_t bytes_left = in.size() - (pos + splitter_size);
 		if (bytes_left == 0)
@@ -33,7 +32,7 @@ std::vector<std::string> split(std::string in, const std::string & splitter)
 	}
 
 	if (in.size() > 0)
-		out.push_back(in);
+		out.push_back(std::move(in));
 
 	return out;
 }

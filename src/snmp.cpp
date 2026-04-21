@@ -244,11 +244,11 @@ bool snmp::process_BER(block *const b, oid_req_t *const oids_req, const bool is_
 					oids_req->err_idx = 1;
 				}
 				else {
-					oids_req->oids.push_back(oid_next);
+					oids_req->oids.push_back(std::move(oid_next));
 				}
 			}
 			else {
-				oids_req->oids.push_back(oid_out);
+				oids_req->oids.push_back(std::move(oid_out));
 			}
 		}
 		else if (type == 0x30) {  // sequence
